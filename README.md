@@ -42,7 +42,7 @@ If you do not want to use Composer, you can download or checkout the complete so
 Getting Started
 ===============
 
-To begin developing with our PHP client, you will need your very own application ID and secret key.  First you will need to create an account and login to the MOJIO developer center.  We recommend starting with our sandbox environment (http://sandbox.developer.moj.io/).
+To begin developing with our PHP client, you will need your very own application ID and secret key.  First you will need to create an account and login to the MOJIO developer center.
 
 Once you have logged in, you can create a new Application.  From here, you will want to copy the Application ID and the Secret Key, these will be required to initialize the MOJIO client
 
@@ -60,11 +60,11 @@ require '[path/to/vendor]/autoload.php';
 $appId = "{APPID}";
 $secretKey = "{SecretKey}";
 
-$client = Client::factory(array(
+$client = Client::factory([
         'base_url' => Client::LIVE,
         'app_id' => $appId,
         'secret_key' => $secretKey
-));
+]);
 
 // ...
 ```
@@ -73,14 +73,13 @@ $client = Client::factory(array(
 Authenticate a Mojio User
 -------------------------
 
-Now that your MojioClient is associated with your app, you can get started making some API calls.  However, many of our API calls also require an authorized user to be associated with the client session.  A user can grant you access using our OAuth2 service, and client calls.
+Now that your MojioClient is associated with your app, you can get started making some API calls.  However, many of our API calls also require an authorized user to be associated with the client session.  A user can grant you access using our OAuth2 service, and client calls. For redirectUri, https scheme is required.
 
 ```php
 // ...
 
 // Set the redirect URI to point to this exact same script.
-$redirectUri = (isset($_SERVER['HTTPS']) ? 'https' : 'http')
-                   . '://' . $_SERVER['HTTP_HOST'] 
+$redirectUri = 'https://' . $_SERVER['HTTP_HOST'] 
                    . strtok($_SERVER['REQUEST_URI'], '?');
                    
 if(!isset($_GET['code'])) {
@@ -97,7 +96,7 @@ if(!isset($_GET['code'])) {
 $client->logout();
 ```
 
-Please note, you must add the ***$redirectUri*** to the allowed ***Redirect URIs*** in your application settings on the [Developer Center](https://developer.moj.io/account/apps).
+Please note, you must add the ***$redirectUri*** to the allowed ***Redirect URIs*** in your application settings on the [Developer Center](https://docs.moj.io/#/myapp/).
 
 
 Fetching Data
@@ -108,10 +107,10 @@ To retrieve a set of a particular MOJIO entities, you can use the "GET" method. 
 ```php
 // ...
 // Fetch first page of 15 users
-$results = $client->getTrips(array(
+$results = $client->getTrips([
     'pageSize' => 15,
     'page' => 1
-));
+]);
 
 foreach( $results as $trip )
 {
@@ -130,9 +129,9 @@ By passing in the ID of an entity (often a GUID), you can request a single MOJIO
 $mojioId = "0a5123a0-7e70-12d1-a5k6-28db18c10200";
 	
 // Fetch mojio from API
-$mojio = $client->getMojio(array(
+$mojio = $client->getMojio([
     "id" => $mojioId
-));
+]);
 	
 // Do something with the mojio data
 // ...
@@ -148,17 +147,17 @@ If you want to update and save an entity, you need to first load the entity from
 $appId = "0a5123a0-7e70-12d1-a5k6-28db18c10200";
 	
 // Fetch app from API
-$app = $client->getApp(array(
+$app = $client->getApp([
     'id' => $appId
-));
+]);
 	
 // Make a change
 $app->Name = "New Application Name";
 	
 // Save the changes
-$client->saveEntity(array(
+$client->saveEntity([
     'entity' => $app
-));
+]);
 ```
 
 Get a list of child entities
@@ -174,18 +173,18 @@ use Mojio\Api\Model\EventEntity;
     $mojioId = "0a5123a0-7e70-12d1-a5k6-28db18c10200";
 	
     // Fetch mojio's events
-    $events = $client->getList(array(
+    $events = $client->getList([
         "type" => MojioEntity::getType(),
         "id" => $mojioId,
         "action" => EventEntity::getType()
-    ));
+    ]);
 	
     // Or, alternatively
-    $mojio = $client->getMojio(array( 'id' => $mojioId ));
-    $events = $client->getList(array(
+    $mojio = $client->getMojio(['id' => $mojioId]);
+    $events = $client->getList([
         'entity' => $mojio,
         'action' => EventEntity::getType()
-    ));
+    ]);
 
     // ...
 ```
@@ -204,20 +203,20 @@ use Mojio\Api\Model\UserEntity;
     $value = "Brown"; 	// Value to store
 
     // Save user's eye colour
-    $client.setStored( array(
+    $client.setStored([
         'type' => UserEntity::getType(),
         'id' => $userId,
         'key' => $key
         'value' => $value
-    ));
+    ]);
 
     // ...
     // Retrieve user's eye colour
-    $client.getStored( array(
+    $client.getStored([
         'type' => UserEntity::getType(),
         'id' => $userId,
         'key' => $key
-    ));
+    ]);
 ```
 
 Requesting Event Updates
@@ -232,10 +231,10 @@ Instead of continuously polling the API to check for updates, you can request ou
               'IgnitionOn', // Event Type to receive
               'Mojio',      // Subscription Type
               $mojioId,     // Entity ID
-              "http://my-domain-example.com/receiver.php" // Location to send events
+              "https://my-domain-example.com/receiver.php" // Location to send events
     );
 
-    $client->newEntity( array('entity' =>$sub) );
+    $client->newEntity(['entity' =>$sub]);
 ```
 
 And in your "receiver.php" file you will want to process any incoming events:

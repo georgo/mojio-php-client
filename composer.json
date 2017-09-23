@@ -1,30 +1,30 @@
 {
 	"name": "mojio/mojio",
-    "type": "library",
-    "description": "PHP client to login and access the Mojio API",
-    "keywords": ["api","mojio","client","guzzle"],
-    "homepage": "http://github.com/mojio/mojio-php-client",
-    "require": {
-        "php": ">=5.3.3",
-        "guzzle/guzzle": "~3.7.0",
-        "league/oauth2-client": "0.6.0"
-    },
-    "suggest": {
-        "doctrine/cache": "Adds support for caching of credentials and responses",
-        "ext-apc": "Allows service description opcode caching, request and response caching, and credentials caching",
-        "monolog/monolog": "Adds support for logging HTTP requests and responses"
-    },
-    "require-dev": {
-        "doctrine/cache": "~1.0",
-        "ext-openssl": "*",
-        "monolog/monolog": "1.4.*",
-        "phpunit/phpunit": "3.7.*",
-        "symfony/class-loader": "2.*",
-        "symfony/yaml": "2.*"
-    },
-    "autoload": {
-        "psr-0": {
-            "Mojio": "src/"
-        }
-    }
+	"type": "library",
+	"description": "PHP client to login and access the Mojio API",
+	"keywords": ["api","mojio","client","guzzle"],
+	"homepage": "http://github.com/mojio/mojio-php-client",
+	"require": {
+		"php": ">=5.3.3",
+		"guzzle/guzzle": "~3.7.0",
+		"league/oauth2-client": "0.6.0"
+	},
+	"suggest": {
+		"doctrine/cache": "Adds support for caching of credentials and responses",
+		"ext-apc": "Allows service description opcode caching, request and response caching, and credentials caching",
+		"monolog/monolog": "Adds support for logging HTTP requests and responses"
+	},
+	"require-dev": {
+		"doctrine/cache": "~1.0",
+		"ext-openssl": "*",
+		"monolog/monolog": "1.4.*",
+		"phpunit/phpunit": "3.7.*",
+		"symfony/class-loader": "2.*",
+		"symfony/yaml": "2.*"
+	},
+	"autoload": {
+		"psr-0": {
+			"Mojio": "src/"
+		}
+	}
 }

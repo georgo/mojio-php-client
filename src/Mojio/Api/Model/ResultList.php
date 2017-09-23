@@ -14,9 +14,11 @@ class ResultList implements \ArrayAccess, \Iterator {
 			$this->entities[] = new $class( $entity );
 		}
 		
-		$this->totalRows = $data['TotalRows'];
+		/*
+		$this->totalRows = isset($data['TotalRows']) ? ;
 		$this->offset = $data['Offset'];
 		$this->pageSize = $data['PageSize'];
+		*/
 	}
 	
 	public function toArray()

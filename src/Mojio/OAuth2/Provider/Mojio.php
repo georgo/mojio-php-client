@@ -14,7 +14,7 @@ class Mojio extends AbstractProvider
         'full'
     );
     
-    public $base_url = 'https://api.moj.io/oauth2';
+    public $base_url = 'https://accounts.moj.io/oauth2';
 
     public function urlAuthorize()
     {

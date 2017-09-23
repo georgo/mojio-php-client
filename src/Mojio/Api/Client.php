@@ -6,11 +6,11 @@ use Guzzle\Common\Exception\GuzzleException;
 use Guzzle\Common\Collection;
 use Guzzle\Service\Description\ServiceDescription;
 use Guzzle\Common\Event;
+use League\OAuth2\Client\Token\AccessToken as Token;
 
 class Client extends \Guzzle\Service\Client
 {
-	const LIVE = "https://api.moj.io/v1";
-	const SANDBOX = "https://api.moj.io/v1";
+	const LIVE = "https://api.moj.io/v2";
 	
 	/**
 	 * @var string Mojio App ID
@@ -28,7 +28,7 @@ class Client extends \Guzzle\Service\Client
 	protected $version;
 	
 	/**
-	 * @var token Token
+	 * @var Token Token
 	 */
 	public $token;
 	
@@ -37,25 +37,24 @@ class Client extends \Guzzle\Service\Client
 	 *
 	 * @param array|Collection $config Configuration data. Array keys:
 	 *    host - Base URL host.  Default: api.moj.io
-	 *    base_url - Base URL of web service.  Default: {{scheme}}://{{host}}/{{version}}
+	 *    base_url - Base URL of web service.  Default: https://{{host}}/{{version}}
 	 *    app_id - Mojio App ID
 	 *    secret_key - Mojio App Secret Key
 	 *    token - Optional Token ID
 	 *
-	 * @return S3Client
+	 * @return Client
 	 */
-	public static function factory($config = array() )
-	{
-		$defaults = array(
-		        'scheme' => 'https',
-		        'host' => 'api.moj.io',
-				'base_url' => '{scheme}://{host}/{version}',
-		        'oauth_base_url' => '{scheme}://{host}/oauth2',
-				'app_id' => null,
-				'secret_key' => null,
-				'version' => 'v1'
-		);
-		$required = array('base_url', 'app_id', 'secret_key','version','oauth_base_url');
+	public static function factory($config = []) {
+		$defaults = [
+			'scheme'         => 'https',
+			'host'           => 'api.moj.io',
+			'base_url'       => 'https://{host}/{version}',
+			'oauth_base_url' => 'https://{host}/oauth2',
+			'app_id'         => null,
+			'secret_key'     => null,
+			'version'        => 'v2'
+		];
+		$required = ['base_url', 'app_id', 'secret_key','version','oauth_base_url'];
 		$config = Collection::fromConfig($config, $defaults, $required);
 
 		$client = new self($config->get('base_url'), $config);
@@ -64,100 +63,122 @@ class Client extends \Guzzle\Service\Client
 		$description = ServiceDescription::factory(__DIR__ . '/service.json');
 		$client->setDescription($description);
 		
-		$client->getEventDispatcher()->addListener('request.before_send', function( Event $event ) {
+		$client->getEventDispatcher()->addListener('request.before_send', function(Event $event) {
 			$request = $event['request'];
-			$token = $request->getClient()->getTokenId();
+			$token   = $request->getClient()->getTokenId();
 			
-			if($token) {
-			    $request->setHeader('MojioApiToken',$token);
+			if ($token) {
+				$request->setHeader('Authorization', 'Bearer '. $token);
 			}
 		});
 		
 		return $client;
 	}
 	
-	private function getOAuthProvider($redirect_uri) {
-	     return new \Mojio\OAuth2\Provider\Mojio (array(
-                'clientId'  =>  $this->getConfig('app_id'),
-                'clientSecret'  =>  $this->getConfig('secret_key'),
-	            'base_url' => $this->expandTemplate($this->getConfig('oauth_base_url')),
-                'redirectUri'   =>  $redirect_uri
-        ));
+	/**
+	 * Get Mojio oauth2 provider
+	 *
+	 * @param string $redirect_uri
+	 * @return \Mojio\OAuth2\Provider\Mojio
+	 */
+	private function getOAuthProvider($redirect_uri = '') {
+		 return new \Mojio\OAuth2\Provider\Mojio ([
+			'clientId'     => $this->getConfig('app_id'),
+			'clientSecret' => $this->getConfig('secret_key'),
+			'base_url'     => $this->expandTemplate($this->getConfig('oauth_base_url')),
+			'redirectUri'  => $redirect_uri
+		 ]);
 	}
 	
+	/**
+	 * Get oauth2 authorization url
+	 *
+	 * @param string $redirect_uri
+	 * @return string
+	 */
 	public function getAuthorizationUrl($redirect_uri) {
-	    $provider = $this->getOAuthProvider($redirect_uri);
-	    
-	    return $provider->getAuthorizationUrl();
+		$provider = $this->getOAuthProvider($redirect_uri);
+		
+		return $provider->getAuthorizationUrl();
 	}
-	
-	public function authorize($redirect_uri, $code) {
-	    $provider = $this->getOAuthProvider($redirect_uri);
-	    
-	    $tokenId = $provider->getAccessToken(new \League\OAuth2\Client\Grant\AuthorizationCode(), array(
-	       'code' => $code 
-	    ));
-	    
-	    if($tokenId) {
-	        try {
-	            $this->_hasInitialized = true;
-			    $token = $this->getToken(array('id' => $tokenId) );
 
-				$this->token = $token;
-			}catch( GuzzleException $e ){
-			}
-	    }
+	/**
+	 * Request Oauth authrization
+	 *
+	 * @param string $redirect_uri
+	 * @param string $code
+	 * @return void
+	 */
+	public function authorize($redirect_uri, $code) {
+		$provider = $this->getOAuthProvider($redirect_uri);
+		
+		$token = $provider->getAccessToken('authorization_code', [
+			'code' => $code
+		]);
+
+		if ($token) {
+			$this->token = $token;
+		}
 	}
-	
-	private function initializeToken () {
-	    if($this->token) {
-	        return;
-	    }
-	    
-	    $tokenId = $this->getConfig('token');
-	    if( $tokenId ) {
-	        try {
-	            $token = $this->getToken(array('id' => $tokenId) );
-	            	
-	            $this->token = $token;
-	            return;
-	        }catch(GuzzleException $e ){
-	            // Token
-	        }
-	    }
-	     
-        // Attempt to initalize client using app id and secret
-	    try {
-	        $token = $this->begin( array(
-	            'appId' => $this->getConfig('app_id') ,
-	            'secretKey' => $this->getConfig('secret_key')
-	        ));
-	         
-	        $this->token = $token;
-	        return;
-	    }catch( GuzzleException $e ){
-	        throw $e;
-	    }
+
+	/**
+	 * Login using user's credentials
+	 *
+	 * @param array $credentials
+	 * @return void
+	 */
+	public function login($credentials = []) {
+		$provider = $this->getOAuthProvider();
+		$token = $provider->getAccessToken('password', [
+			'username' => $credentials['userOrEmail'],
+			'password' => $credentials['password'],
+		]);
+
+		if ($token) {
+			$this->token = $token;
+		}
 	}
-	
-	private $_hasInitialized = false;
-	public function getTokenId()
-	{
-	    if(!$this->_hasInitialized) {
-	        $this->_hasInitialized = true;
-	        $this->initializeToken ();
-	    }
-	    
-		return $this->token ? $this->token->getId() : null;
+
+	/**
+	 * Extends the token validity
+	 *
+	 * @return void
+	 */
+	public function extendToken() {
+		$provider = $this->getOAuthProvider();
+		$token = $provider->getAccessToken('refresh_token', [
+			'refresh_token' => $this->getRefreshTokenId(),
+		]);
+
+		if ($token) {
+			$this->token = $token;
+		}
 	}
-	
-	public function isAuthenticated()
-	{
-		return $this->getTokenId() && $this->token->UserId;
+
+	/**
+	 * Get token
+	 *
+	 * @return void
+	 */
+	public function getTokenId() {
+		return $this->token ? (string) $this->token : NULL;
 	}
-	
-	public function currentUser()
-	{
-		return $this->isAuthenticated() ? $this->getUser( array('id' => $this->token->UserId ) ) :  null;
+
+	/**
+	 * Get refresh token
+	 *
+	 * @return void
+	 */
+	private function getRefreshTokenId() {
+		return $this->token ? $this->token->refreshToken  : NULL;
+	}
+
+	/**
+	 * Get if user is authenitcated
+	 *
+	 * @return boolean
+	 */
+	public function isAuthenticated() {
+		return (bool) $this->getTokenId();
 	}
 }

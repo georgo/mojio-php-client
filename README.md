@@ -9,13 +9,13 @@ Installation
 Using Composer (recommended)
 ----------------------------
 
-The client has been added to packagist under the name mojio/mojio and can be included in your project using [Composer](http://getcomposer.org/).
+The client has been added to packagist under the name georgo/mojio and can be included in your project using [Composer](http://getcomposer.org/).
 
-1. First you will need to add "mojio/mojio" as a dependency in your composer.json file (currently only the dev-master is available, more stable versioning coming soon):
+1. First you will need to add "georgo/mojio" as a dependency in your composer.json file (currently only the dev-master is available, more stable versioning coming soon):
     ```json
     {
         "require": {
-          "mojio/mojio": "~1.0"
+          "georgo/mojio": "~2.0"
         }
     }
     ```
@@ -42,7 +42,7 @@ If you do not want to use Composer, you can download or checkout the complete so
 Getting Started
 ===============
 
-To begin developing with our PHP client, you will need your very own application ID and secret key.  First you will need to create an account and login to the MOJIO developer center.
+To begin developing with Mojio PHP client, you will need your very own application ID and secret key.  First you will need to create an account and login to the MOJIO developer center.
 
 Once you have logged in, you can create a new Application.  From here, you will want to copy the Application ID and the Secret Key, these will be required to initialize the MOJIO client
 
@@ -73,7 +73,7 @@ $client = Client::factory([
 Authenticate a Mojio User
 -------------------------
 
-Now that your MojioClient is associated with your app, you can get started making some API calls.  However, many of our API calls also require an authorized user to be associated with the client session.  A user can grant you access using our OAuth2 service, and client calls. For redirectUri, https scheme is required.
+Now that your MojioClient is associated with your app, you can get started making some API calls.  However, many of Mojio API calls also require an authorized user to be associated with the client session.  A user can grant you access using Mojio OAuth2 service, and client calls. For redirectUri, https scheme is required.
 
 ```php
 // ...
@@ -122,7 +122,7 @@ foreach( $results as $trip )
 Fetch a specific Entity
 -----------------------
 
-By passing in the ID of an entity (often a GUID), you can request a single MOJIO entity from our API.
+By passing in the ID of an entity (often a GUID), you can request a single MOJIO entity from Mojio API.
 
 ```php
 // ...
@@ -192,7 +192,7 @@ use Mojio\Api\Model\EventEntity;
 Using the Mojio Storage
 -----------------------
 
-With the MOJIO API, you are able to store your own private data on our servers as key value pairs.  These key value pairs will only be accessible by your application, and you can associate them with any MOJIO entities (ex: MOJIO Device, Application, User, Trip, Event, Invoice, Product).
+With the MOJIO API, you are able to store your own private data on Mojio servers as key value pairs.  These key value pairs will only be accessible by your application, and you can associate them with any MOJIO entities (ex: MOJIO Device, Application, User, Trip, Event, Invoice, Product).
 
 ```php
 use Mojio\Api\Model\UserEntity;
@@ -222,7 +222,7 @@ use Mojio\Api\Model\UserEntity;
 Requesting Event Updates
 ------------------------
 
-Instead of continuously polling the API to check for updates, you can request our API send a POST request to an endpoint of your choosing everytime certain events are received.
+Instead of continuously polling the API to check for updates, you can request Mojio API send a POST request to an endpoint of your choosing everytime certain events are received.
 
 ```php
     $mojioId = "0a5123a0-7e70-12d1-a5k6-28db18c10200";

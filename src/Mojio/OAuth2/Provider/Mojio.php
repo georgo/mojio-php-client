@@ -7,6 +7,8 @@ use League\OAuth2\Client\Provider\User;
 
 class Mojio extends AbstractProvider
 {
+    const LIVE = "https://accounts.moj.io/oauth2";
+
     public $scopeSeparator = ' ';
 
     public $scopes = array(

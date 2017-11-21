@@ -48,8 +48,8 @@ class Client extends \Guzzle\Service\Client
 		$defaults = [
 			'scheme'         => 'https',
 			'host'           => 'api.moj.io',
-			'base_url'       => 'https://{host}/{version}',
-			'oauth_base_url' => 'https://{host}/oauth2',
+			'base_url'       => self::LIVE,
+			'oauth_base_url' => \Mojio\OAuth2\Provider\Mojio::LIVE,
 			'app_id'         => null,
 			'secret_key'     => null,
 			'version'        => 'v2'

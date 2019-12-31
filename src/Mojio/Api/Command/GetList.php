@@ -31,7 +31,6 @@ class GetList extends MojioCommand
 	{
 		$this->validateCriteria();
 		$this->validatePage();
-		$this->validateSortOrder();
 		
 		parent::validate();
 	}
@@ -41,7 +40,7 @@ class GetList extends MojioCommand
 	 */
 	protected function validateCriteria() 
 	{
-		$criteria = $this->get('criteria');
+		$criteria = $this->get('filter');
 		if( $criteria && is_array($criteria))
 		{
 			$str = "";
@@ -53,7 +52,7 @@ class GetList extends MojioCommand
 				$str .= $key . "=" . $value;
 			}
 			
-			$this->set('criteria', $str);
+			$this->set('filter', $str);
 		}
 	}
 	
@@ -72,17 +71,8 @@ class GetList extends MojioCommand
 			$limit = $pageSize ?  $pageSize : 10;
 			$offset = ($page-1) * $limit;
 			
-			$this->set('limit', $limit);
-			$this->set('offset', $offset);
+			$this->set('top', $limit);
+			$this->set('skip', $offset);
 		}
-	}
-	
-	/**
-	 * Make sure we use the string values for true and false when defining sort order.
-	 */
-	protected function validateSortOrder()
-	{
-		$desc = $this->get('desc');
-		$this->set('desc', $desc ? 'true' : 'false');
 	}
 }

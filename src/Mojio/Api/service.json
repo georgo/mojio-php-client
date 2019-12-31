@@ -225,31 +225,24 @@
 					"type": "string",
 					"required": false
 				},
-				"limit": {
+				"top": {
 					"location": "query",
 					"type": "integer",
 					"default": 10
-		   		},
-		   		"offset": {
+				},
+				"skip": {
 					"location": "query",
 					"type": "integer",
 					"default": 0
-		   		},
-		   		"sortBy": {
+				},
+				"orderby": {
 					"location": "query",
 					"type": "string"
-		   		},
-		   		"desc": {
-		   			"location": "query",
-		   			"type": "string",
-		   			"enum": [
-		   				"true","false"
-		   			]
-		   		},
-		   		"criteria": {
-		   			"location": "query",
-		   			"type": "string"
-		   		}
+				},
+				"filter": {
+					"location": "query",
+					"type": "string"
+				}
 			}
 		},
 		"getUsers": {

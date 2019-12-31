@@ -6,7 +6,7 @@
 	"homepage": "http://github.com/georgo/mojio-php-client",
 	"require": {
 		"php": ">=5.3.3",
-		"guzzle/guzzle": "~3.7.0",
+		"guzzlehttp/guzzle": "~6.5.0",
 		"league/oauth2-client": "0.6.0"
 	},
 	"suggest": {

@@ -5,8 +5,8 @@
 	"keywords": ["api","mojio","client","guzzle"],
 	"homepage": "http://github.com/georgo/mojio-php-client",
 	"require": {
-		"php": ">=5.3.3",
-		"guzzlehttp/guzzle": "~6.5.0",
+		"php": ">=8.0",
+		"guzzlehttp/guzzle": "^7.2",
 		"league/oauth2-client": "0.6.0"
 	},
 	"suggest": {
@@ -18,7 +18,7 @@
 		"doctrine/cache": "~1.0",
 		"ext-openssl": "*",
 		"monolog/monolog": "1.4.*",
-		"phpunit/phpunit": "3.7.*",
+		"phpunit/phpunit": "^9",
 		"symfony/class-loader": "2.*",
 		"symfony/yaml": "2.*"
 	},
